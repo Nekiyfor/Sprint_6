@@ -1,10 +1,14 @@
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import qa_scooter_POM.ImportantQuestionsPage;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.stream.Stream;
 
 public class ImportantQuestionsTest {
     private WebDriver driver;
@@ -17,82 +21,33 @@ public class ImportantQuestionsTest {
         objImportantQuestionsPage = new ImportantQuestionsPage(driver);
     }
 
-    @Test
-    void que_ofCostTest(){
-        //Здесь и далее:
-        //Ожидаем загрузки блока и скроллимся к нему
+    @ParameterizedTest
+    @MethodSource("provideImportantQuestions")
+    void testImportantQuestion(String questionKey, String ansLocator, String expectedAnswer) {
         objImportantQuestionsPage.waitAndScrollForAccordion();
-        //Кликаем на вопрос
-        objImportantQuestionsPage.que_ofCostClick();
-        //Записываем часть ожидаемого ответа в переменную
-        String expAnswer = "Сутки — 400 рублей. Оплата курьеру";
-        //Запрашиваем текст из локатора(поля ответа на вопрос)
-        String actualAnswer = objImportantQuestionsPage.ans_ofCostText();
-        //Проверяем что полученный ответ содежржит текст из ожидания, либо показываем ошибку
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
+        objImportantQuestionsPage.clickQuestion(questionKey);
+        String actualAnswer = objImportantQuestionsPage.getAnswerText(ansLocator);
+        Assertions.assertTrue(actualAnswer.contains(expectedAnswer), "Ответ не соответствует вопросу: " + questionKey);
     }
 
-    @Test
-    void que_ofQuantityTest(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofQuantityClick();
-        String expAnswer = "один заказ — один самокат";
-        String actualAnswer = objImportantQuestionsPage.ans_ofQuantityText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofRentTimeTest(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofRentTimeClick();
-        String expAnswer = "Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру";
-        String actualAnswer = objImportantQuestionsPage.ans_ofRentTimeText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofOrderTodayTest(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofOrderTodayClick();
-        String expAnswer = "Только начиная с завтрашнего дня";
-        String actualAnswer = objImportantQuestionsPage.ans_ofOrderTodayText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofChangingRentTimeTest(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofChangingRentTimeClick();
-        String expAnswer = "Пока что нет";
-        String actualAnswer = objImportantQuestionsPage.ans_ofChangingRentTimeText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofChargeTest(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofChargeClick();
-        String expAnswer = "Самокат приезжает к вам с полной зарядкой";
-        String actualAnswer = objImportantQuestionsPage.ans_ofChargeText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofCancelOrder(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofCancelOrderClick();
-        String expAnswer = "пока самокат не привезли";
-        String actualAnswer = objImportantQuestionsPage.ans_ofCancelOrderText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
-    }
-
-    @Test
-    void que_ofLifeInEbenya(){
-        objImportantQuestionsPage.waitAndScrollForAccordion();
-        objImportantQuestionsPage.que_ofLifeInEbenyaClick();
-        String expAnswer = "обязательно. Всем самокатов";
-        String actualAnswer = objImportantQuestionsPage.ans_ofLifeInEbenyaText();
-        assertTrue(actualAnswer.contains(expAnswer), "Ответ не соответсвует вопросу");
+    private static Stream<Arguments> provideImportantQuestions() {
+        return Stream.of(
+                Arguments.of("que_ofCost", "ans_ofCostText", "Сутки — 400 рублей. Оплата курьеру — наличными или картой."),
+                Arguments.of("que_ofQuantity", "ans_ofQuantityText", "Пока что у нас так: один заказ — один самокат. " +
+                        "Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."),
+                Arguments.of("que_ofRentTime", "ans_ofRentTimeText", "Допустим, вы оформляете заказ на 8 мая. " +
+                        "Мы привозим самокат 8 мая в течение дня. " +
+                        "Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. " +
+                        "Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30."),
+                Arguments.of("que_ofOrderToday", "ans_ofOrderTodayText", "Только начиная с завтрашнего дня. Но скоро станем расторопнее."),
+                Arguments.of("que_ofChangingRentTime", "ans_ofChangingRentTimeText", "Пока что нет! Но если что-то срочное — " +
+                        "всегда можно позвонить в поддержку по красивому номеру 1010."),
+                Arguments.of("que_ofCharge", "ans_ofChargeText", "Самокат приезжает к вам с полной зарядкой. " +
+                        "Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится."),
+                Arguments.of("que_ofCancelOrder", "ans_ofCancelOrderText", "Да, пока самокат не привезли. " +
+                        "Штрафа не будет, объяснительной записки тоже не попросим. Все же свои."),
+                Arguments.of("que_ofLifeInEbenya", "ans_ofLifeInEbenyaText", "Да, обязательно. Всем самокатов! И Москве, и Московской области.")
+        );
     }
 
 

@@ -6,10 +6,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import static java.time.Duration.ofSeconds;
 
 public class ImportantQuestionsPage {
     private WebDriver driver;
+    private WebDriverWait wait;
 
     //Блок вопросов о важном
     private By accordion = By.xpath("//div[@class='accordion']");
@@ -49,96 +51,80 @@ public class ImportantQuestionsPage {
     private By ans_ofLifeInEbenya = By.id("accordion__panel-7");
 
 
-    public ImportantQuestionsPage (WebDriver driver) {
+    public ImportantQuestionsPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, ofSeconds(3));
     }
+
     //Метод ожидания загрузки блока вопросов, и проскролла к нему
-    public void waitAndScrollForAccordion(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(accordion));
+    public void waitAndScrollForAccordion() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(accordion));
         WebElement element = driver.findElement(accordion);
-        ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
-    }
-    //Здесь и далее методы клика по вопросам
-    public void que_ofCostClick() {
-        driver.findElement(que_ofCost).click();
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
     }
 
-    public void que_ofQuantityClick() {
-        driver.findElement(que_ofQuantity).click();
+    //Кликаем по вопросам
+    public void clickQuestion(String questionKey) {
+        switch (questionKey) {
+            case "que_ofCost":
+                driver.findElement(que_ofCost).click();
+                break;
+            case "que_ofQuantity":
+                driver.findElement(que_ofQuantity).click();
+                break;
+            case "que_ofRentTime":
+                driver.findElement(que_ofRentTime).click();
+                break;
+            case "que_ofOrderToday":
+                driver.findElement(que_ofOrderToday).click();
+                break;
+            case "que_ofChangingRentTime":
+                driver.findElement(que_ofChangingRentTime).click();
+                break;
+            case "que_ofCharge":
+                driver.findElement(que_ofCharge).click();
+                break;
+            case "que_ofCancelOrder":
+                driver.findElement(que_ofCancelOrder).click();
+                break;
+            case "que_ofLifeInEbenya":
+                driver.findElement(que_ofLifeInEbenya).click();
+                break;
+        }
     }
 
-    public void que_ofRentTimeClick() {
-        driver.findElement(que_ofRentTime).click();
-    }
-
-    public void que_ofOrderTodayClick() {
-        driver.findElement(que_ofOrderToday).click();
-    }
-
-    public void que_ofChangingRentTimeClick() {
-        driver.findElement(que_ofChangingRentTime).click();
-    }
-
-    public void que_ofChargeClick() {
-        driver.findElement(que_ofCharge).click();
-    }
-
-    public void que_ofCancelOrderClick() {
-        driver.findElement(que_ofCancelOrder).click();
-    }
-
-    public void que_ofLifeInEbenyaClick() {
-        driver.findElement(que_ofLifeInEbenya).click();
-    }
-
-    //Здесь и далее методы получения текста из ответа
-    public String ans_ofCostText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofCost));
-        return driver.findElement(ans_ofCost).getText();
-    }
-
-    public String ans_ofQuantityText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofQuantity));
-        return driver.findElement(ans_ofQuantity).getText();
-    }
-
-    public String ans_ofRentTimeText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofRentTime));
-        return driver.findElement(ans_ofRentTime).getText();
-    }
-
-    public String ans_ofOrderTodayText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofOrderToday));
-        return driver.findElement(ans_ofOrderToday).getText();
-    }
-
-    public String ans_ofChangingRentTimeText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofChangingRentTime));
-        return driver.findElement(ans_ofChangingRentTime).getText();
-    }
-
-    public String ans_ofChargeText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofCharge));
-        return driver.findElement(ans_ofCharge).getText();
-    }
-
-    public String ans_ofCancelOrderText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofCancelOrder));
-        return driver.findElement(ans_ofCancelOrder).getText();
-    }
-
-    public String ans_ofLifeInEbenyaText(){
-        new WebDriverWait(driver, ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(ans_ofLifeInEbenya));
-        return driver.findElement(ans_ofLifeInEbenya).getText();
+    //Получаем текст ответов на вопросы
+    public String getAnswerText(String ansLocator) {
+        By locator;
+        switch (ansLocator) {
+            case "ans_ofCostText":
+                locator = ans_ofCost;
+                break;
+            case "ans_ofQuantityText":
+                locator = ans_ofQuantity;
+                break;
+            case "ans_ofRentTimeText":
+                locator = ans_ofRentTime;
+                break;
+            case "ans_ofOrderTodayText":
+                locator = ans_ofOrderToday;
+                break;
+            case "ans_ofChangingRentTimeText":
+                locator = ans_ofChangingRentTime;
+                break;
+            case "ans_ofChargeText":
+                locator = ans_ofCharge;
+                break;
+            case "ans_ofCancelOrderText":
+                locator = ans_ofCancelOrder;
+                break;
+            case "ans_ofLifeInEbenyaText":
+                locator = ans_ofLifeInEbenya;
+                break;
+            default:
+                throw new IllegalArgumentException("Нет значения для локатора: '" + ansLocator + "'");
+        }
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
     }
 
 }
